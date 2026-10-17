@@ -1,6 +1,6 @@
-import { eq } from "drizzle-orm";
+import { and, desc, eq, isNull } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertUser, users } from "../drizzle/schema";
+import { Favorite, InsertUser, favorites, users } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -89,4 +89,38 @@ export async function getUserByOpenId(openId: string) {
   return result.length > 0 ? result[0] : undefined;
 }
 
-// TODO: add feature queries here as your schema grows.
+export async function listFavorites(userId: number): Promise<Favorite[]> {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(favorites)
+    .where(and(eq(favorites.userId, userId), isNull(favorites.deletedAt)))
+    .orderBy(desc(favorites.createdAt));
+}
+
+export async function findFavorite(userId: number, favoritableType: string, favoritableId: number) {
+  const db = await getDb();
+  if (!db) return undefined;
+  const result = await db.select().from(favorites).where(and(
+    eq(favorites.userId, userId),
+    eq(favorites.favoritableType, favoritableType),
+  )).limit(100);
+  return result.find(item => item.favoritableId === favoritableId);
+}
+
+export async function restoreFavorite(id: number) {
+  const db = await getDb();
+  if (!db) return;
+  await db.update(favorites).set({ deletedAt: null }).where(eq(favorites.id, id));
+}
+
+export async function createFavorite(input: { userId: number; favoritableType: string; favoritableId: number }) {
+  const db = await getDb();
+  if (!db) return;
+  await db.insert(favorites).values(input);
+}
+
+export async function softDeleteFavorite(id: number) {
+  const db = await getDb();
+  if (!db) return;
+  await db.update(favorites).set({ deletedAt: new Date() }).where(eq(favorites.id, id));
+}

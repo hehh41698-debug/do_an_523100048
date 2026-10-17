@@ -8,7 +8,7 @@
 
 NEXA được phát triển theo hướng storefront kết hợp khu vực quản trị. Giao diện sử dụng nhận diện riêng với nền sáng, chữ navy và điểm nhấn electric blue. Bố cục ưu tiên khả năng đọc thông số kỹ thuật, thao tác nhanh trên máy tính và khả năng sử dụng tốt trên màn hình nhỏ.
 
-Dự án hiện đang ở **phiên bản demo có thể chạy được**. Catalog mẫu được tổ chức trong nguồn dữ liệu dùng chung. Một số luồng như giỏ hàng, đơn hàng và chuyển đổi vai trò tài khoản được mô phỏng ở phía trình duyệt để phục vụ việc kiểm tra giao diện và nghiệp vụ. Kiến trúc backend, tRPC và Drizzle đã được chuẩn bị cho bước chuyển sang cơ sở dữ liệu thực tế.
+Dự án hiện đang ở **phiên bản demo có thể chạy được**. Catalog mẫu được tổ chức trong nguồn dữ liệu dùng chung. Giỏ hàng, đơn hàng và yêu thích trên giao diện vẫn lưu localStorage để kiểm tra nhanh; đồng thời schema MySQL, migration và tRPC favorites API đã được bổ sung làm nền tảng chuyển sang dữ liệu thật. Form đăng nhập hiện là mô phỏng giao diện, không được xem là cơ chế xác thực production.
 
 ## 2. Chức năng hiện có
 
@@ -28,7 +28,15 @@ Dự án hiện đang ở **phiên bản demo có thể chạy được**. Catal
 
 Khu vực `/admin` được tách riêng khỏi storefront bằng layout quản trị. Các nhóm chức năng hiện có gồm tổng quan, sản phẩm, danh mục, tồn kho, đơn hàng, người dùng, báo cáo và thông báo.
 
-Backend đã có `adminProcedure` để kiểm tra `ctx.user.role`. Người dùng không có vai trò quản trị sẽ không được phép gọi các procedure dành riêng cho admin. Vai trò demo có thể được chuyển trong menu tài khoản để kiểm tra các trạng thái giao diện.
+Backend đã có `adminProcedure` để kiểm tra `ctx.user.role`. Người dùng không có vai trò quản trị sẽ không được phép gọi các procedure dành riêng cho admin. Vai trò demo không còn được chuyển trực tiếp từ menu; storefront dẫn tới `/admin/login`, còn dashboard chỉ mở sau khi đăng nhập admin demo hợp lệ.
+
+### Luồng tài khoản và yêu thích sau đợt hiệu chỉnh
+
++ User dùng `/login` để đăng nhập, `/register` để tạo tài khoản và `/my-favorites` để xem sản phẩm đã lưu.
++ Admin dùng riêng `/admin/login`; không có form đăng ký admin công khai. Route `/admin/*` tự chuyển về `/admin/login` nếu chưa có trạng thái admin.
++ Admin demo của giao diện là `admin@nexa.store` với mật khẩu `admin123!`; thông tin này chỉ phục vụ trình diễn local và phải được thay bằng seed an toàn khi triển khai thật.
++ Nút tim trên catalog cập nhật optimistic theo trạng thái localStorage. Backend đã có `favorites.list`, `favorites.check`, `favorites.toggle` và `favorites.remove`, mỗi procedure đều dùng `protectedProcedure` và `ctx.user.id` để kiểm tra ownership.
++ Database đã có các bảng `password_reset_tokens`, `login_logs`, `admin_audit_logs`, `favorite_collections` và `favorites`, cùng các trường trạng thái đăng nhập mở rộng trên `users`.
 
 ## 3. Công nghệ và công cụ đang sử dụng
 
@@ -41,7 +49,7 @@ Backend đã có `adminProcedure` để kiểm tra `ctx.user.role`. Người dù
 | API | tRPC 11 | Kết nối frontend và backend với contract có kiểu dữ liệu |
 | Dữ liệu | `shared/catalog.ts` | Nguồn dữ liệu mẫu dùng chung giữa client và server |
 | Cơ sở dữ liệu | Drizzle ORM, MySQL | Cấu trúc sẵn sàng cho dữ liệu production và migration |
-| Lưu trữ demo | `localStorage` | Lưu giỏ hàng, trạng thái đơn và một số trạng thái giao diện trong bản demo |
+| Lưu trữ demo | `localStorage` | Lưu giỏ hàng, trạng thái đơn, yêu thích và trạng thái auth mô phỏng trong bản demo |
 | Kiểm thử | Vitest | Kiểm tra procedure xác thực, catalog và quyền admin |
 | Quản lý gói | pnpm | Cài dependency và chạy các script của dự án |
 | IDE | Visual Studio Code | Môi trường chỉnh sửa, chạy terminal và quản lý mã nguồn |
@@ -108,7 +116,8 @@ nexa-laptop-store/
 ├── drizzle/
 │   ├── schema.ts                  # Schema ORM
 │   ├── relations.ts               # Quan hệ giữa các bảng
-│   └── migrations/                # Migration database
+│   ├── migrations/                # Migration database
+│   ├── 0001_even_pete_wisdom.sql  # Auth, logs và favorites schema
 │
 ├── .vscode/
 │   ├── extensions.json             # Extension khuyến nghị
@@ -213,6 +222,7 @@ Các kiểm tra gần nhất đã hoàn tất thành công:
 + TypeScript compiler không phát hiện lỗi qua `pnpm run check`.
 + Vitest đạt 4/4 test trong 2 test file.
 + Quyền admin, procedure catalog và luồng đăng xuất đã có test backend.
++ Schema TypeScript, migration MySQL và favorites procedures đã được kiểm tra qua TypeScript và build.
 + Giao diện đã được kiểm tra ở desktop và mobile theo các luồng storefront, danh mục, PC Builder, liên hệ, chi tiết sản phẩm và admin.
 +
 ## 8. Biến môi trường và dữ liệu nhạy cảm
@@ -228,8 +238,9 @@ Không commit các nội dung sau vào Git hoặc chia sẻ công khai:
 
 ## 9. Hướng phát triển tiếp theo
 
-+ Chuyển dữ liệu demo và localStorage sang MySQL thông qua Drizzle ORM.
-+ Hoàn thiện xác thực tài khoản và phân quyền production.
++ Chuyển toàn bộ dữ liệu demo và localStorage sang MySQL thông qua Drizzle ORM.
++ Hoàn thiện AuthController/UserAuth/AdminAuth với session cookie, bcrypt hoặc argon2id, rate limit, CSRF, reset password và 2FA admin.
++ Bổ sung test integration cho auth và favorites, sau đó nâng coverage tối thiểu lên 80% trước khi production.
 + Mở rộng PC Builder với kiểm tra kích thước, cổng kết nối, nguồn và tản nhiệt.
 + Bổ sung thanh toán, vận chuyển, mã giảm giá và email xác nhận đơn hàng.
 + Tách storefront, admin và các feature lớn thành module riêng khi hệ thống phát triển thêm.
