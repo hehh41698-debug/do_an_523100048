@@ -33,6 +33,24 @@ Sau đó mở địa chỉ được hiển thị trong terminal, thường là:
 http://localhost:3000
 ```
 
+## Nếu Windows báo lỗi PowerShell
+
+Nếu terminal báo `npm.ps1 cannot be loaded because running scripts is disabled`, không gõ lại phần tiền tố `PS C:\...>`; đó chỉ là phần hiển thị đường dẫn terminal. Có thể dùng file thực thi `.cmd` để không phụ thuộc PowerShell policy:
+
+```powershell
+pnpm.cmd install
+pnpm.cmd dev
+```
+
+Nếu máy chưa nhận lệnh `pnpm`, dùng:
+
+```powershell
+npx.cmd --yes pnpm@10.4.1 install
+npx.cmd --yes pnpm@10.4.1 dev
+```
+
+Không dùng `npx` không có hậu tố `.cmd` nếu PowerShell đang chặn file `npx.ps1`. Dự án đã dùng `cross-env`, vì vậy lệnh `pnpm.cmd dev` chạy được trên Windows, macOS và Linux.
+
 ## Kiểm tra mã nguồn
 
 ```bash

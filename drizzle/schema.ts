@@ -1,4 +1,4 @@
-import { boolean, index, int, mysqlEnum, mysqlTable, text, timestamp, uniqueIndex, varchar } from "drizzle-orm/mysql-core";
+import { boolean, decimal, index, int, mysqlEnum, mysqlTable, text, timestamp, uniqueIndex, varchar } from "drizzle-orm/mysql-core";
 
 /**
  * Core user table backing auth flow.
@@ -107,3 +107,149 @@ export type LoginLog = typeof loginLogs.$inferSelect;
 export type AdminAuditLog = typeof adminAuditLogs.$inferSelect;
 export type FavoriteCollection = typeof favoriteCollections.$inferSelect;
 export type Favorite = typeof favorites.$inferSelect;
+
+/** Product commerce model inspired by ZAVY's variants/cart/order flow, adapted for computer hardware. */
+export const productVariants = mysqlTable("product_variants", {
+  id: int("id").autoincrement().primaryKey(),
+  productId: int("productId").notNull(),
+  sku: varchar("sku", { length: 80 }).notNull().unique(),
+  name: varchar("name", { length: 180 }).notNull(),
+  cpu: varchar("cpu", { length: 120 }),
+  gpu: varchar("gpu", { length: 120 }),
+  ram: varchar("ram", { length: 80 }),
+  storage: varchar("storage", { length: 80 }),
+  color: varchar("color", { length: 60 }),
+  priceAdjustment: decimal("priceAdjustment", { precision: 12, scale: 2 }).default("0").notNull(),
+  stock: int("stock").default(0).notNull(),
+  isActive: boolean("isActive").default(true).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+}, table => ({
+  productIdx: index("product_variants_product_idx").on(table.productId),
+  stockIdx: index("product_variants_stock_idx").on(table.stock),
+}));
+
+export const carts = mysqlTable("carts", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  status: mysqlEnum("status", ["active", "converted", "abandoned"]).default("active").notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+}, table => ({
+  activeUserUnique: uniqueIndex("carts_active_user_unique").on(table.userId, table.status),
+  userIdx: index("carts_user_idx").on(table.userId),
+}));
+
+export const cartItems = mysqlTable("cart_items", {
+  id: int("id").autoincrement().primaryKey(),
+  cartId: int("cartId").notNull(),
+  productId: int("productId").notNull(),
+  variantId: int("variantId"),
+  productName: varchar("productName", { length: 180 }).notNull(),
+  variantName: varchar("variantName", { length: 180 }),
+  unitPrice: decimal("unitPrice", { precision: 12, scale: 2 }).notNull(),
+  quantity: int("quantity").notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+}, table => ({
+  cartProductUnique: uniqueIndex("cart_items_product_variant_unique").on(table.cartId, table.productId, table.variantId),
+  cartIdx: index("cart_items_cart_idx").on(table.cartId),
+}));
+
+export const orders = mysqlTable("orders", {
+  id: int("id").autoincrement().primaryKey(),
+  orderNumber: varchar("orderNumber", { length: 40 }).notNull().unique(),
+  userId: int("userId").notNull(),
+  status: mysqlEnum("status", ["pending", "confirmed", "packing", "shipping", "delivered", "cancelled"]).default("pending").notNull(),
+  subtotal: decimal("subtotal", { precision: 12, scale: 2 }).notNull(),
+  shippingFee: decimal("shippingFee", { precision: 12, scale: 2 }).default("0").notNull(),
+  discount: decimal("discount", { precision: 12, scale: 2 }).default("0").notNull(),
+  total: decimal("total", { precision: 12, scale: 2 }).notNull(),
+  recipientName: varchar("recipientName", { length: 160 }).notNull(),
+  recipientPhone: varchar("recipientPhone", { length: 32 }).notNull(),
+  shippingAddress: text("shippingAddress").notNull(),
+  note: text("note"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+}, table => ({
+  userIdx: index("orders_user_idx").on(table.userId),
+  statusIdx: index("orders_status_idx").on(table.status),
+  createdIdx: index("orders_created_idx").on(table.createdAt),
+}));
+
+export const orderItems = mysqlTable("order_items", {
+  id: int("id").autoincrement().primaryKey(),
+  orderId: int("orderId").notNull(),
+  productId: int("productId").notNull(),
+  variantId: int("variantId"),
+  productName: varchar("productName", { length: 180 }).notNull(),
+  variantName: varchar("variantName", { length: 180 }),
+  sku: varchar("sku", { length: 80 }),
+  unitPrice: decimal("unitPrice", { precision: 12, scale: 2 }).notNull(),
+  quantity: int("quantity").notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+}, table => ({
+  orderIdx: index("order_items_order_idx").on(table.orderId),
+}));
+
+export const invoices = mysqlTable("invoices", {
+  id: int("id").autoincrement().primaryKey(),
+  orderId: int("orderId").notNull().unique(),
+  invoiceNumber: varchar("invoiceNumber", { length: 48 }).notNull().unique(),
+  total: decimal("total", { precision: 12, scale: 2 }).notNull(),
+  paymentMethod: mysqlEnum("paymentMethod", ["cod", "bank_transfer", "vnpay", "momo"]).default("cod").notNull(),
+  paymentStatus: mysqlEnum("paymentStatus", ["unpaid", "pending", "paid", "failed", "refunded"]).default("unpaid").notNull(),
+  transactionReference: varchar("transactionReference", { length: 120 }),
+  paidAt: timestamp("paidAt"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+}, table => ({
+  paymentIdx: index("invoices_payment_idx").on(table.paymentStatus),
+}));
+
+export const productReviews = mysqlTable("product_reviews", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  productId: int("productId").notNull(),
+  orderId: int("orderId"),
+  rating: int("rating").notNull(),
+  title: varchar("title", { length: 160 }),
+  content: text("content").notNull(),
+  status: mysqlEnum("status", ["pending", "published", "hidden"]).default("pending").notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+}, table => ({
+  productIdx: index("product_reviews_product_idx").on(table.productId),
+  userProductUnique: uniqueIndex("product_reviews_user_product_unique").on(table.userId, table.productId, table.orderId),
+}));
+
+export const contactMessages = mysqlTable("contact_messages", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId"),
+  name: varchar("name", { length: 160 }).notNull(),
+  email: varchar("email", { length: 320 }).notNull(),
+  subject: varchar("subject", { length: 180 }).notNull(),
+  message: text("message").notNull(),
+  adminReply: text("adminReply"),
+  repliedBy: int("repliedBy"),
+  repliedAt: timestamp("repliedAt"),
+  status: mysqlEnum("status", ["new", "in_progress", "resolved"]).default("new").notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+}, table => ({
+  statusIdx: index("contact_messages_status_idx").on(table.status),
+  createdIdx: index("contact_messages_created_idx").on(table.createdAt),
+}));
+
+/** Normalized two-way inbox records. contact_messages remains the support request summary. */
+export const messages = mysqlTable("messages", {
+  id: int("id").autoincrement().primaryKey(),
+  conversationId: int("conversationId").notNull(),
+  senderId: int("senderId").notNull(),
+  receiverId: int("receiverId").notNull(),
+  content: text("content").notNull(),
+  isRead: boolean("isRead").default(false).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+}, table => ({
+  conversationIdx: index("messages_conversation_idx").on(table.conversationId, table.createdAt),
+  receiverReadIdx: index("messages_receiver_read_idx").on(table.receiverId, table.isRead),
+}));
