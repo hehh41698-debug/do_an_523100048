@@ -1,335 +1,751 @@
-# NEXA Laptop Store
+<div align="center">
 
-> **Công cụ mạnh. Ý tưởng rộng.**
->
-> NEXA Laptop Store là website thương mại điện tử chuyên về laptop và thiết bị công nghệ. Dự án tập trung vào một trải nghiệm mua sắm rõ ràng, hiện đại và có khả năng mở rộng: người dùng có thể tìm sản phẩm theo nhu cầu, đọc thông số, xây dựng cấu hình PC, quản lý giỏ hàng và theo dõi đơn hàng; quản trị viên có một không gian riêng để theo dõi sản phẩm, tồn kho, đơn hàng và người dùng.
+# 🖥️ NEXA Laptop Store
 
-## 1. Tổng quan dự án
+### Công cụ mạnh. Ý tưởng rộng.
 
-NEXA được phát triển theo hướng storefront kết hợp khu vực quản trị. Giao diện sử dụng nhận diện riêng với nền sáng, chữ navy và điểm nhấn electric blue. Bố cục ưu tiên khả năng đọc thông số kỹ thuật, thao tác nhanh trên máy tính và khả năng sử dụng tốt trên màn hình nhỏ.
+Website thương mại điện tử demo cho laptop, PC, linh kiện và thiết bị công nghệ — kết hợp storefront responsive, PC Builder, giỏ hàng, checkout, theo dõi đơn hàng và Admin Dashboard.
 
-Dự án hiện đang ở **phiên bản demo có thể chạy được**. Catalog mẫu được tổ chức trong nguồn dữ liệu dùng chung. Giỏ hàng, đơn hàng và yêu thích trên giao diện vẫn lưu localStorage để kiểm tra nhanh; đồng thời schema MySQL, migration và tRPC favorites API đã được bổ sung làm nền tảng chuyển sang dữ liệu thật. Form đăng nhập hiện là mô phỏng giao diện, không được xem là cơ chế xác thực production.
+[![Version](https://img.shields.io/badge/version-1.0.0-2563eb?style=flat-square)](#-tr%E1%BA%A1ng-th%C3%A1i-d%E1%BB%B1-%C3%A1n)
+[![Status](https://img.shields.io/badge/status-demo%20%7C%20development-f59e0b?style=flat-square)](#-tr%E1%BA%A1ng-th%C3%A1i-d%E1%BB%B1-%C3%A1n)
+[![License](https://img.shields.io/badge/license-MIT-22c55e?style=flat-square)](#-license)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Vue](https://img.shields.io/badge/Vue%203-3.5-42B883?style=for-the-badge&logo=vuedotjs&logoColor=white)](https://vuejs.org/)
+[![Node.js](https://img.shields.io/badge/Node.js-20%2B-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)](https://nodejs.org/)
+[![tRPC](https://img.shields.io/badge/tRPC-11-2596BE?style=for-the-badge&logo=trpc&logoColor=white)](https://trpc.io/)
+[![Drizzle](https://img.shields.io/badge/Drizzle%20ORM-MySQL-C5F74F?style=for-the-badge&logo=drizzle&logoColor=111827)](https://orm.drizzle.team/)
+[![Socket.io](https://img.shields.io/badge/Socket.io-4-010101?style=for-the-badge&logo=socketdotio&logoColor=white)](https://socket.io/)
 
-## 2. Chức năng hiện có
+[🚀 Chạy local](#-c%C3%A0i-%C4%91%E1%BA%B7t-v%C3%A0-ch%E1%BA%A1y) · [📖 Kiến trúc](#%EF%B8%8F-ki%E1%BA%BFn-tr%C3%BAc-h%E1%BB%87-th%E1%BB%91ng) · [🛠️ PC Builder](#%EF%B8%8F-pc-builder) · [🐛 Báo lỗi](#-%C4%91%C3%B3ng-g%C3%B3p)
 
-### Khu vực khách hàng
+</div>
 
-+ Xem trang chủ, danh mục sản phẩm và sản phẩm nổi bật.
-+ Tìm kiếm theo tên, thương hiệu hoặc cấu hình.
-+ Trang chủ hiển thị sản phẩm theo từng khu vực thương hiệu; trang danh mục giữ công cụ sắp xếp và nhóm sản phẩm nhưng đã bỏ sidebar filter chiếm diện tích.
-+ Sắp xếp theo mức độ nổi bật, giá thấp, giá cao hoặc đánh giá.
-+ Mở trang chi tiết để xem giá, hình ảnh, cấu hình và thông tin bảo hành.
-+ Thêm sản phẩm vào giỏ hàng, thay đổi số lượng và tạo đơn hàng demo.
-+ Theo dõi lịch sử đơn hàng tại route `/orders`.
-+ Sử dụng PC Builder để chọn CPU, GPU, RAM, SSD, ngân sách và nhận cảnh báo tương thích cơ bản.
-+ Gửi yêu cầu tư vấn hoặc tin nhắn qua khu vực liên hệ.
-+ Quản lý biến thể phần cứng theo SKU, CPU, GPU, RAM, SSD, màu sắc và tồn kho.
-+ Giỏ hàng nghiệp vụ có kiểm tra sản phẩm, cấu hình, số lượng và giới hạn tồn kho trước khi thêm hoặc cập nhật.
-+ Checkout tách rõ tạm tính, phí vận chuyển, giảm giá, phương thức thanh toán và trạng thái đơn.
-+ Hỗ trợ vòng đời đơn hàng từ chờ xác nhận, đóng gói, giao hàng, đã giao đến hủy.
-+ Đánh giá sản phẩm đi qua trạng thái chờ duyệt trước khi hiển thị công khai.
-+ Hero banner có autoplay 5 giây, nút chuyển slide, hiệu ứng floating/parallax nhẹ và CTA chuyển màu khi hover.
-+ Category card dùng ảnh sản phẩm thật, overlay khi hover, nút khám phá và liên kết đến nhóm Laptop, PC, Linh kiện, Phần mềm hoặc Thiết bị văn phòng.
-+ Trang chi tiết có gallery thumbnail, bảng CPU, RAM, ổ cứng, GPU, màn hình, pin và trọng lượng.
-+ Checkout có COD, chuyển khoản VietQR mô phỏng theo tổng tiền, MoMo/ZaloPay mô phỏng, mã giảm giá `NEXA10` và thông báo mã đơn sau khi đặt hàng.
-### Khu vực quản trị
+> [!IMPORTANT]
+> NEXA hiện là **bản demo có thể chạy được**, chưa phải hệ thống e-commerce production. Catalog dùng dữ liệu chung trong `shared/catalog.ts`; một số luồng storefront như cart, order, favorites và auth demo vẫn có phần lưu bằng `localStorage`. Schema MySQL, Drizzle migrations và tRPC procedures đã được chuẩn bị để chuyển dần sang dữ liệu thật.
 
-Khu vực `/admin` được tách riêng khỏi storefront bằng layout quản trị. Các nhóm chức năng hiện có gồm tổng quan, sản phẩm, danh mục, thương hiệu, tồn kho, đơn hàng, hộp thư liên hệ, người dùng, báo cáo và thông báo.
+## 📑 Mục lục
 
-Backend đã có `adminProcedure` để kiểm tra `ctx.user.role`. Người dùng không có vai trò quản trị sẽ không được phép gọi các procedure dành riêng cho admin. Vai trò demo không còn được chuyển trực tiếp từ menu; storefront dẫn tới `/admin/login`, còn dashboard chỉ mở sau khi đăng nhập admin demo hợp lệ.
+- [📌 Tổng quan](#-t%E1%BB%95ng-quan)
 
-### Logic thương mại điện tử được chuẩn hóa theo mô hình ZAVY
+- [🎯 Bài toán và giải pháp](#-b%C3%A0i-to%C3%A1n-v%C3%A0-gi%E1%BA%A3i-ph%C3%A1p)
 
-ZAVY được dùng làm tài liệu tham khảo về cách tách controller/model cho sản phẩm, biến thể, giỏ hàng, đơn hàng, hóa đơn, đánh giá và liên hệ. NEXA không sao chép PHP hoặc giao diện ZAVY mà chuyển các nghiệp vụ đó sang Node.js, tRPC, Drizzle và mô hình sản phẩm máy tính.
+- [📊 Trạng thái dự án](#-tr%E1%BA%A1ng-th%C3%A1i-d%E1%BB%B1-%C3%A1n)
 
-+ Sản phẩm máy tính có thể có nhiều cấu hình, vì vậy NEXA dùng `product_variants` thay cho size/màu của sản phẩm thời trang. Mỗi biến thể có SKU, CPU, GPU, RAM, storage, điều chỉnh giá và tồn kho riêng.
-+ Giỏ hàng thuộc về user và có các dòng hàng theo `productId` và `variantId`. Khi thêm hoặc tăng số lượng, backend kiểm tra cấu hình có hoạt động không và không cho vượt tồn kho.
-+ Checkout chỉ tiếp nhận các dòng hàng thuộc giỏ của chính user. Đơn hàng lưu snapshot tên sản phẩm, biến thể, SKU, giá và số lượng để dữ liệu lịch sử không bị thay đổi khi catalog cập nhật.
-+ Hóa đơn tách khỏi đơn hàng để quản lý COD, chuyển khoản, VNPay, MoMo, trạng thái chưa thanh toán, chờ xử lý, đã thanh toán và hoàn tiền.
-+ Review mặc định ở trạng thái `pending`; chỉ review đã được duyệt mới được hiển thị công khai.
-+ Tin nhắn liên hệ có người gửi, email, chủ đề, nội dung và trạng thái xử lý để Admin tiếp nhận như một yêu cầu hỗ trợ thật.
+- [🖼️ Demo và screenshots](#%EF%B8%8F-demo-v%C3%A0-screenshots)
 
-### Cập nhật theo prompt giao diện và vận hành mới
+- [✨ Tính năng](#-t%C3%ADnh-n%C4%83ng)
 
-Homepage đã chuyển từ một hero tĩnh sang slider tự động với ba slide sản phẩm, hiệu ứng ảnh lơ lửng và chỉ báo slide. Logo NEXA hiện dùng biểu tượng sói xanh dạng SVG inline để không phụ thuộc file logo bên ngoài, đồng thời giữ chữ NEXA làm tên thương hiệu. Các category card có ảnh thật, lớp overlay, hiệu ứng scale và CTA khám phá.
+- [🏗️ Kiến trúc hệ thống](#%EF%B8%8F-ki%E1%BA%BFn-tr%C3%BAc-h%E1%BB%87-th%E1%BB%91ng)
 
-Khu vực sản phẩm nổi bật trên trang chủ được chia theo thương hiệu. Mỗi hàng có tiêu đề thương hiệu, nút xem tất cả và tối đa bốn sản phẩm. Trang `/laptops` vẫn phục vụ danh mục tổng hợp nhưng không còn sidebar filter bên trái; người dùng dùng nhóm điều hướng và sắp xếp để giảm độ rối trên màn hình nhỏ.
+- [🧰 Tech stack](#-tech-stack)
 
-Checkout đã tách thành một bước riêng thay vì tạo đơn ngay trong drawer. Người dùng nhập người nhận, số điện thoại, địa chỉ, mã giảm giá và phương thức thanh toán. Tổng tiền cập nhật tức thời gồm tiền hàng, phí vận chuyển và giảm giá. VietQR, MoMo và ZaloPay hiện là mô phỏng giao diện; khi triển khai thật cần thay bằng API thanh toán có chữ ký và webhook đối soát.
+- [⚙️ Cài đặt và chạy](#%EF%B8%8F-c%C3%A0i-%C4%91%E1%BA%B7t-v%C3%A0-ch%E1%BA%A1y)
 
-Order tracking có timeline bốn bước ở trang người dùng. Socket.io đã được gắn vào HTTP server; Admin có thể phát sự kiện đổi trạng thái, các client đang mở nhận `order:updated` và cập nhật mà không cần F5. Procedure production `orders.updateStatus` vẫn yêu cầu `adminProcedure`; sự kiện demo từ client cần được khóa thêm bằng session Admin khi đưa lên internet.
+- [🔐 Tài khoản demo](#-t%C3%A0i-kho%E1%BA%A3n-demo)
 
-Hộp thư liên hệ đã có trong Admin với danh sách người gửi, chủ đề, nội dung, trạng thái chưa xem/đã xem/đã xử lý và thao tác phản hồi. Module thương hiệu độc lập cũng được thêm để dữ liệu sản phẩm có quan hệ logic Category → Brand → Product trong giao diện quản trị.
+- [🗺️ Routes chính](#%EF%B8%8F-routes-ch%C3%ADnh)
 
-### Bản sửa luồng tồn kho, phản hồi, đơn hàng và thanh toán
+- [🔌 API tRPC](#-api-trpc)
 
-Tồn kho trong Dashboard Admin chỉ còn ba cột Sản phẩm, SKU và Tồn kho. Ô số lượng tồn kho có thể chỉnh trực tiếp; mỗi thay đổi phát sự kiện `inventory:updated` qua Socket.io để các màn hình đang mở cập nhật mà không cần tải lại.
+- [🛠️ PC Builder](#%EF%B8%8F-pc-builder)
 
-Hộp thư liên hệ hỗ trợ textarea phản hồi trực tiếp. Tin nhắn User được phát qua `contact:message`, phản hồi Admin qua `contact:reply`; cả hai phía lưu lịch sử hội thoại local cho bản demo và đồng bộ realtime giữa các client. Khi dùng database thật, các trường `adminReply`, `repliedBy` và `repliedAt` được lưu trong `contact_messages`.
+- [🗃️ Mô hình dữ liệu](#%EF%B8%8F-m%C3%B4-h%C3%ACnh-d%E1%BB%AF-li%E1%BB%87u)
 
-Nút “Xem chi tiết” trong “Đơn hàng của bạn” mở modal hóa đơn đầy đủ gồm mã đơn, ngày đặt, trạng thái giao hàng, trạng thái thanh toán, số hóa đơn, danh sách sản phẩm, số lượng, đơn giá, tạm tính, phí vận chuyển, giảm giá, tổng thanh toán, người nhận, địa chỉ và phương thức thanh toán.
+- [📂 Cấu trúc dự án](#-c%E1%BA%A5u-tr%C3%BAc-d%E1%BB%B1-%C3%A1n)
 
-Luồng thanh toán được tách thành bước checkout và bước hiển thị hóa đơn. Đơn mới lưu `subtotal`, `shippingFee`, `discount`, `tax`, `total`, `paymentMethod`, `paymentStatus` và `invoiceNumber`. Admin có thể cập nhật trạng thái `unpaid`, `pending`, `paid`, `failed` hoặc `refunded`; sự kiện `payment:updated` đồng bộ trạng thái cho User. VietQR, MoMo và ZaloPay hiện là giao diện mô phỏng, cần thay bằng cổng thanh toán có webhook khi triển khai production.
+- [🧪 Kiểm thử](#-ki%E1%BB%83m-th%E1%BB%AD)
 
-### Kiểm thử nhanh các luồng mới
+- [🔒 Bảo mật và giới hạn demo](#-b%E1%BA%A3o-m%E1%BA%ADt-v%C3%A0-gi%E1%BB%9Bi-h%E1%BA%A1n-demo)
 
-Mở `/admin/login` bằng tài khoản demo, vào Tồn kho và thay một số lượng: bảng chỉ hiển thị Sản phẩm, SKU, Tồn kho; mở thêm một client khác để kiểm tra số lượng cập nhật qua Socket.io. Vào Hộp thư, nhập phản hồi rồi chọn Gửi phản hồi; ở màn hình User mở Liên hệ để thấy nội dung trao đổi. Vào Đơn hàng của bạn, bấm Xem chi tiết để kiểm tra modal hóa đơn. Trong Admin mở Đơn hàng, đổi trạng thái Thanh toán và quan sát thông báo đồng bộ ở User.
+- [🗺️ Roadmap](#%EF%B8%8F-roadmap)
 
-### Luồng tài khoản và yêu thích sau đợt hiệu chỉnh
+- [🤝 Đóng góp](#-%C4%91%C3%B3ng-g%C3%B3p)
 
-+ User dùng `/login` để đăng nhập, `/register` để tạo tài khoản và `/my-favorites` để xem sản phẩm đã lưu.
-+ Admin dùng riêng `/admin/login`; không có form đăng ký admin công khai. Route `/admin/*` tự chuyển về `/admin/login` nếu chưa có trạng thái admin.
-+ Admin demo của giao diện là `admin@nexa.store` với mật khẩu `admin123!`; thông tin này chỉ phục vụ trình diễn local và phải được thay bằng seed an toàn khi triển khai thật.
-+ Nút tim trên catalog cập nhật optimistic theo trạng thái localStorage. Backend đã có `favorites.list`, `favorites.check`, `favorites.toggle` và `favorites.remove`, mỗi procedure đều dùng `protectedProcedure` và `ctx.user.id` để kiểm tra ownership.
-+ Database đã có các bảng `password_reset_tokens`, `login_logs`, `admin_audit_logs`, `favorite_collections` và `favorites`, cùng các trường trạng thái đăng nhập mở rộng trên `users`.
+- [📄 License](#-license)
 
-## 3. Công nghệ và công cụ đang sử dụng
+- [🙏 Acknowledgments](#-acknowledgments)
 
-### Bổ sung catalog và tài nguyên ảnh
+## 📌 Tổng quan
 
-Catalog hiện có 53 sản phẩm, phân bổ không đều theo năm nhóm Laptop, PC, Linh kiện, Phần mềm và Thiết bị văn phòng. Mỗi sản phẩm có tên, giá, mô tả ngắn, thương hiệu, nhóm, danh mục, thông số, ảnh đại diện, tồn kho và trạng thái còn hàng/hết hàng. Storefront giữ dạng lưới phân trang để không phải render toàn bộ danh sách trong một lần.
+> **Chọn đúng thiết bị. Hiểu rõ cấu hình. Mua sắm tự tin hơn.**
 
-Ảnh demo được lưu bằng đường dẫn tương đối trong `shared/catalog.ts`. Cấu trúc tài nguyên là:
+NEXA Laptop Store là dự án storefront kết hợp khu vực quản trị dành cho cửa hàng laptop và thiết bị công nghệ. Giao diện sử dụng nền sáng, chữ navy, điểm nhấn electric blue và biểu tượng sói xanh inline SVG. Layout ưu tiên khả năng đọc thông số kỹ thuật, thao tác nhanh trên desktop và responsive trên mobile/tablet.
 
-```text
-client/public/assets/
-└── images/
-    ├── banners/       # banner sự kiện và khuyến mãi
-    └── products/      # ảnh đại diện sản phẩm
+Dự án được tổ chức theo hướng:
+
+- **Storefront:** catalog, tìm kiếm, sản phẩm nổi bật, chi tiết sản phẩm, cart, checkout, orders, contact và PC Builder.
+
+- **Admin Space:** dashboard, sản phẩm, danh mục, thương hiệu, tồn kho, đơn hàng, hộp thư và người dùng.
+
+- **Backend foundation:** Node.js, Express, tRPC, Drizzle ORM, MySQL schema và Socket.io.
+
+- **Demo-first:** dữ liệu mẫu và local state giúp dự án chạy được nhanh; các điểm nối database thật được tách riêng để phát triển tiếp.
+
+## 🎯 Bài toán và giải pháp
+
+### ❌ Bài toán
+
+Người mua laptop hoặc người tự build PC thường phải xử lý nhiều thông tin rời rạc: tên sản phẩm, CPU, GPU, RAM, SSD, kích thước màn hình, giá, tồn kho và khả năng tương thích. Nếu không có cách trình bày nhất quán, việc so sánh và ra quyết định trở nên khó khăn, đặc biệt với người mới.
+
+### ✅ Giải pháp của NEXA
+
+- Chuẩn hóa catalog theo nhóm **Laptop, PC, Linh kiện, Phần mềm và Thiết bị văn phòng**.
+
+- Tìm kiếm theo tên, thương hiệu, danh mục và các thông số trong sản phẩm.
+
+- Hiển thị sản phẩm theo thương hiệu, nhóm và trạng thái hàng.
+
+- Trang chi tiết có gallery, giá, rating, thông số CPU/RAM/storage/GPU/màn hình/pin/trọng lượng.
+
+- Mô hình `product_variants` hỗ trợ SKU, cấu hình, điều chỉnh giá và tồn kho riêng.
+
+- PC Builder kiểm tra tương thích cơ bản giữa các lựa chọn và ngân sách.
+
+- Checkout tách khỏi cart drawer, có người nhận, địa chỉ, mã giảm giá, phí vận chuyển và phương thức thanh toán.
+
+- Admin có thể theo dõi tồn kho, đơn hàng, thanh toán và trao đổi với khách hàng.
+
+## 📊 Trạng thái dự án
+
+| Hạng mục                 | Trạng thái         | Ghi chú                                                      |
+| ------------------------ | ------------------ | ------------------------------------------------------------ |
+| Storefront responsive    | ✅ Hoàn thành demo | Vue 3, responsive desktop/tablet/mobile                      |
+| Catalog                  | ✅ Hoàn thành demo | 53 sản phẩm trong `shared/catalog.ts`                        |
+| Tìm kiếm và nhóm catalog | ✅ Hoàn thành      | Query, category, group và sắp xếp phía giao diện             |
+| Product detail           | ✅ Hoàn thành      | Gallery và bảng thông số                                     |
+| PC Builder               | ✅ Hoàn thành demo | Kiểm tra tương thích cơ bản                                  |
+| Cart và checkout         | ✅ Hoàn thành demo | Có kiểm tra tồn kho; UI còn dùng local state ở một số luồng  |
+| Order tracking           | ✅ Hoàn thành demo | Timeline và trạng thái đơn                                   |
+| Admin Dashboard          | ✅ Hoàn thành demo | Product, category, brand, inventory, orders, contacts, users |
+| tRPC backend             | ✅ Đã có nền tảng  | Procedure public/protected/admin                             |
+| MySQL/Drizzle            | 🟡 Đã chuẩn bị     | Schema và migrations có sẵn; cần seed và nối toàn bộ UI      |
+| Authentication           | 🟡 Demo            | Chưa xem là auth production                                  |
+| Payment gateway          | 🟡 Mô phỏng        | VietQR/MoMo/ZaloPay trên UI; chưa có webhook thật            |
+| Production hardening     | ⏳ Chưa hoàn thành | Cần session, rate limit, CSRF, 2FA và kiểm soát Socket.io    |
+
+## 🖼️ Demo và screenshots
+
+### 🎬 GIF demo
+
+![NEXA homepage demo](client/public/assets/demo-home.gif)
+
+> File GIF trên là placeholder tài liệu. Khi chụp demo thực tế, nên đặt asset tại `client/public/assets/demo-home.gif` hoặc cập nhật đường dẫn ảnh trong README.
+
+### 📸 Bộ ảnh nên chụp
+
+| Trang chủ                                                       | Catalog và tìm kiếm                                           |
+| --------------------------------------------------------------- | ------------------------------------------------------------- |
+| ![NEXA homepage](client/public/assets/screenshots/homepage.png) | ![NEXA catalog](client/public/assets/screenshots/catalog.png) |
+
+| Chi tiết sản phẩm                                                      | PC Builder                                                     |
+| ---------------------------------------------------------------------- | -------------------------------------------------------------- |
+| ![Product detail](client/public/assets/screenshots/product-detail.png) | ![PC Builder](client/public/assets/screenshots/pc-builder.png) |
+
+| Cart và checkout                                                | Admin Dashboard                                                          |
+| --------------------------------------------------------------- | ------------------------------------------------------------------------ |
+| ![Cart checkout](client/public/assets/screenshots/checkout.png) | ![Admin dashboard](client/public/assets/screenshots/admin-dashboard.png) |
+
+> Các ảnh trong bảng là đường dẫn placeholder. Gói mã nguồn hiện có banner SVG và product SVG trong `client/public/assets/images/`, nhưng chưa kèm bộ screenshot README hoàn chỉnh.
+
+## ✨ Tính năng
+
+### 👤 Storefront người dùng
+
+- Trang chủ với hero slider tự động, CTA và category cards.
+
+- Banner autoplay, indicator chuyển slide và hiệu ứng hover/floating nhẹ.
+
+- Catalog phân nhóm Laptop, PC, Linh kiện, Phần mềm và Thiết bị văn phòng.
+
+- Tìm kiếm theo tên, thương hiệu, danh mục hoặc thông số.
+
+- Sắp xếp theo nổi bật, giá thấp, giá cao và rating.
+
+- Phân trang catalog để tránh render toàn bộ danh sách cùng lúc.
+
+- Product detail với gallery thumbnail, rating, giá, tồn kho và bảng thông số.
+
+- Sản phẩm yêu thích với optimistic UI và favorites procedures ở backend.
+
+- Responsive cho desktop, tablet và mobile.
+
+### 🛒 Cart, checkout và order
+
+- Thêm sản phẩm và biến thể vào cart.
+
+- Cập nhật số lượng, xóa dòng hàng và kiểm tra giới hạn tồn kho.
+
+- Phí vận chuyển miễn phí từ **5.000.000 ₫** theo logic demo.
+
+- Coupon demo `NEXA10`.
+
+- Checkout gồm tên người nhận, số điện thoại, địa chỉ, ghi chú và phương thức thanh toán.
+
+- Phương thức demo: COD, chuyển khoản ngân hàng, VietQR, MoMo/ZaloPay ở lớp giao diện.
+
+- Lưu thông tin đơn, trạng thái giao hàng, trạng thái thanh toán và invoice number trong nền tảng backend.
+
+- Order timeline: chờ xác nhận → xác nhận/đóng gói → giao hàng → đã giao; có trạng thái hủy.
+
+- Modal hóa đơn hiển thị mã đơn, sản phẩm, số lượng, đơn giá, phí, giảm giá, tổng tiền và người nhận.
+
+### 🛠️ PC Builder
+
+- Chọn CPU, GPU, RAM, SSD và ngân sách.
+
+- Cảnh báo compatibility cơ bản.
+
+- Có thể đưa cấu hình vào cart hoặc gửi yêu cầu tư vấn.
+
+- Quy tắc nâng cao về kích thước case, cổng kết nối và tản nhiệt được để trong roadmap.
+
+### 👨‍💼 Admin Space
+
+- Route quản trị tách khỏi storefront bằng layout riêng.
+
+- Tổng quan với KPI demo, doanh thu, đơn hàng mới, giá trị đơn trung bình và tồn kho cảnh báo.
+
+- Danh sách và thao tác demo với sản phẩm.
+
+- Thêm/xóa danh mục và xem nhóm thương hiệu.
+
+- Điều chỉnh số lượng tồn kho trực tiếp.
+
+- Cập nhật trạng thái giao hàng và thanh toán của đơn.
+
+- Hộp thư liên hệ: xem, đánh dấu đã đọc và gửi phản hồi.
+
+- Người dùng và role `user`/`admin`.
+
+- `adminProcedure` chặn các procedure quản trị khi role không phải `admin`.
+
+### ⚡ Realtime và trải nghiệm
+
+Socket.io được gắn trên cùng HTTP server với tRPC. Các event hiện có trong lớp realtime:
+
+| Event               | Mục đích                      |
+| ------------------- | ----------------------------- |
+| `order:updated`     | Đồng bộ trạng thái giao hàng  |
+| `payment:updated`   | Đồng bộ trạng thái thanh toán |
+| `inventory:updated` | Đồng bộ thay đổi tồn kho      |
+| `contact:message`   | Thông báo tin nhắn mới        |
+| `contact:reply`     | Thông báo phản hồi Admin      |
+
+Ngoài ra, CSS có animation cho header, hero, product card, drawer, toast và dashboard; có xử lý `prefers-reduced-motion`.
+
+## 🏗️ Kiến trúc hệ thống
+
+```mermaid
+flowchart LR
+  User[👤 Người dùng] --> FE[Vue 3 Storefront]
+  Admin[👨‍💼 Admin] --> ADM[Admin Space]
+  FE --> API[tRPC 11
+/api/trpc]
+  ADM --> API
+  FE <--> WS[Socket.io]
+  ADM <--> WS
+  API --> BE[Node.js + Express]
+  WS --> BE
+  BE --> ORM[Drizzle ORM]
+  ORM --> DB[(MySQL)]
+  BE --> DEMO[shared/catalog.ts
+Demo source of truth]
 ```
 
-Trong mã nguồn catalog, đường dẫn có dạng `assets/images/products/product-01.svg`. Hàm `resolveAsset()` chỉ thêm dấu `/` khi trình duyệt cần phục vụ file từ thư mục public; vì vậy khi tải nguyên folder sang máy khác hoặc hosting, ảnh không phụ thuộc `C:/`, `localhost` hay URL ngoài. Ảnh sản phẩm trong lưới dùng `loading="lazy"`, còn banner đầu tiên được ưu tiên tải để giữ tốc độ hiển thị trang chủ.
+### Luồng khởi động server
 
-Khu vực đầu trang chủ có năm banner sự kiện dạng slider tự động, có chỉ báo chuyển slide, tiêu đề, mô tả ngắn và CTA. Các file SVG nhẹ giúp bản demo không bị nặng khi tải catalog trên máy yếu.
+1. `server/_core/index.ts` tạo Express app và HTTP server.
 
-### Tài khoản demo và hộp thư
+1. Socket.io được gắn vào HTTP server.
 
-Tài khoản User tạm để kiểm tra giao diện là `user@demo.com` với mật khẩu `123456`, tên hiển thị `Người Dùng Demo` và role `user`. Tài khoản Admin demo vẫn là `admin@nexa.store` với mật khẩu `admin123!`. Đây chỉ là dữ liệu trình diễn local, cần thay bằng cơ chế hash mật khẩu và seed an toàn trước khi triển khai thật.
+1. Storage proxy và OAuth routes được đăng ký.
 
-Hệ thống liên hệ hiện có form gửi tin, hộp “Tin nhắn của tôi”, badge đỏ trên icon Tin nhắn, popup toast khi Admin gửi phản hồi, đánh dấu đã đọc khi User mở hộp thư và Socket.io cho cập nhật realtime. Database có thêm bảng `messages` gồm `conversationId`, `senderId`, `receiverId`, `content`, `isRead` và `createdAt`; backend cung cấp `messages.mine`, `messages.send`, `messages.markRead` và `messages.adminList`. Bảng `contact_messages` vẫn giữ vai trò lưu yêu cầu hỗ trợ tổng quát và bản tóm tắt phản hồi.
+1. tRPC được mount tại `/api/trpc`.
 
-| Nhóm | Công nghệ hoặc công cụ | Vai trò trong dự án |
-| --- | --- | --- |
-| Giao diện | Vue 3, Vite, TypeScript | Xây dựng storefront, catalog, PC Builder và các màn hình tương tác |
-| Styling | CSS, Tailwind CSS, responsive layout | Tạo nhận diện NEXA, bố cục responsive và animation |
-| Realtime | Socket.io, Socket.io Client | Cập nhật trạng thái đơn hàng và tín hiệu thay đổi giữa Admin/User |
-| Biểu tượng | Lucide | Hiển thị icon cho điều hướng và thao tác người dùng |
-| Backend | Node.js | Chạy server và xử lý nghiệp vụ phía máy chủ |
-| API | tRPC 11 | Kết nối frontend và backend với contract có kiểu dữ liệu |
-| Dữ liệu demo | `shared/catalog.ts` | Catalog mẫu dùng chung giữa client và server |
-| Commerce schema | `product_variants`, `carts`, `cart_items`, `orders`, `order_items`, `invoices` | Mô hình cấu hình, giỏ hàng, checkout, hóa đơn và tồn kho |
-| Customer care | `product_reviews`, `contact_messages` | Review chờ duyệt và tin nhắn hỗ trợ |
-| Cơ sở dữ liệu | Drizzle ORM, MySQL | Cấu trúc sẵn sàng cho dữ liệu production và migration |
-| Lưu trữ demo | `localStorage` | Lưu giỏ hàng, trạng thái đơn, yêu thích và trạng thái auth mô phỏng trong bản demo |
-| Kiểm thử | Vitest | Kiểm tra procedure xác thực, catalog và quyền admin |
-| Quản lý gói | pnpm | Cài dependency và chạy các script của dự án |
-| IDE | Visual Studio Code | Môi trường chỉnh sửa, chạy terminal và quản lý mã nguồn |
-| Kiểm tra kiểu | TypeScript compiler | Phát hiện lỗi kiểu qua lệnh `pnpm run check` |
-| Triển khai | WebDev runtime, Dockerfile | Chạy preview/server và hỗ trợ đóng gói môi trường triển khai |
+1. Development dùng Vite middleware; production phục vụ static build.
 
-## 4. Cách thức hệ thống đang vận hành
+1. Server ưu tiên `PORT` hoặc port `3000`, sau đó tự tìm một port trống trong khoảng tiếp theo nếu port bị chiếm.
 
-### Nguồn dữ liệu dùng chung
+### Luồng tạo đơn
 
-`shared/catalog.ts` là source of truth của bản demo. Frontend và backend cùng sử dụng cấu trúc sản phẩm, danh mục và người dùng mẫu nhằm hạn chế tình trạng giao diện hiển thị khác với dữ liệu API.
+```mermaid
+sequenceDiagram
+  actor User as Người dùng
+  participant UI as Storefront
+  participant API as tRPC
+  participant DB as Drizzle/MySQL
 
-### Luồng tìm kiếm sản phẩm
-
-Người dùng nhập từ khóa hoặc chọn bộ lọc trên storefront. Frontend gửi điều kiện lọc đến procedure catalog. Backend xử lý nhóm sản phẩm, thương hiệu, giá và trạng thái hàng rồi trả về danh sách để giao diện hiển thị theo dạng thẻ và phân trang.
-
-### Luồng giỏ hàng và đơn hàng
-
-Backend đã có các procedure `cart.list`, `cart.add`, `cart.update`, `cart.remove`, `orders.mine` và `orders.create`. Khi gọi qua tài khoản đã xác thực, hệ thống xác nhận user ownership, kiểm tra biến thể và tồn kho, tính phí vận chuyển miễn phí từ 5.000.000 ₫, tạo snapshot order items, tạo invoice và xóa các dòng đã đặt khỏi giỏ. Storefront hiện vẫn giữ localStorage cho bản demo trực quan; khi nối auth thật, UI cần chuyển các thao tác này sang tRPC để dữ liệu client và database đồng nhất.
-
-### Luồng biến thể và tồn kho
-
-`catalog.variants` trả về các cấu hình đang hoạt động của sản phẩm. Nếu database chưa có biến thể seed, procedure trả về một cấu hình tiêu chuẩn từ catalog demo để giao diện không bị trống. Khi thêm sản phẩm, backend dùng stock của biến thể nếu có, nếu không dùng stock cấp sản phẩm. Đây là quy tắc phù hợp với laptop/PC, nơi cùng một mẫu máy có thể khác RAM, SSD, GPU hoặc màu.
-
-### Luồng đánh giá và liên hệ
-
-Khách có thể xem review đã được publish qua `reviews.list`; user đã xác thực gửi review qua `reviews.submit`, review mới được lưu ở trạng thái pending. Form liên hệ đi qua `contact.send`, lưu họ tên, email, chủ đề và nội dung để Admin xử lý theo các trạng thái new, in_progress và resolved.
-
-### Luồng realtime đơn hàng
-
-Server khởi tạo Socket.io trên cùng HTTP server với tRPC. Client Vue kết nối qua `/socket.io`, đăng ký room `orders` và lắng nghe sự kiện `order:updated`. Khi procedure `orders.updateStatus` cập nhật thành công, server phát mã đơn, trạng thái mới và thời điểm cập nhật tới các client. Bản demo còn có sự kiện relay phục vụ thao tác trong dashboard local; production phải kiểm tra session và quyền Admin ở tầng socket trước khi cho phát sự kiện.
-
-### Luồng phân quyền
-
-Tài khoản demo được phân thành `user` và `admin`. Các procedure công khai phục vụ catalog; các procedure quản trị yêu cầu xác thực và vai trò admin. Cơ chế hiện tại phù hợp cho demo và kiểm thử. Khi đưa vào production cần thay bằng hệ thống xác thực, session và phân quyền hoàn chỉnh.
-
-### Luồng PC Builder
-
-Người dùng chọn linh kiện theo từng nhóm. Hệ thống kiểm tra các điều kiện tương thích cơ bản như socket, chuẩn RAM, công suất nguồn và ngân sách. Kết quả có thể được thêm vào giỏ hoặc gửi yêu cầu tư vấn. Các quy tắc nâng cao như kích thước case, số cổng và khả năng tản nhiệt có thể bổ sung sau.
-
-## 5. Cây cấu trúc tạm thời
-
-Cấu trúc dưới đây phản ánh cách dự án đang được tổ chức. Một số file `.tsx` thuộc scaffold và lớp tích hợp WebDev có sẵn; các file Vue, CSS và dữ liệu dùng chung phục vụ phần storefront NEXA.
-
-```text
-nexa-laptop-store/
-├── client/
-│   ├── index.html                 # HTML entry của frontend
-│   └── src/
-│       ├── App.vue                # Khung giao diện Vue của storefront
-│       ├── App.tsx                # Shell/integration có sẵn của scaffold
-│       ├── main.ts                # Entry Vue
-│       ├── main.tsx               # Entry scaffold React/TSX
-│       ├── index.css              # Design tokens, layout và animation
-│       ├── components/            # Component dùng lại và UI primitives
-│       ├── contexts/              # Context giao diện và theme
-│       ├── hooks/                 # Hook responsive, persistence và tiện ích
-│       ├── lib/
-│       │   ├── trpc.ts            # Kết nối client với tRPC
-│       │   └── utils.ts            # Hàm tiện ích cho UI
-│       └── pages/                 # Các trang và màn hình cấp route
-│
-├── server/
-│   ├── _core/                     # Hạ tầng server, auth, Vite và runtime WebDev
-│   ├── db.ts                      # Helper truy vấn database
-│   ├── routers.ts                 # Router tRPC và procedure nghiệp vụ
-│   ├── storage.ts                 # Xử lý lưu trữ
-│   ├── auth.logout.test.ts         # Test đăng xuất
-│   └── catalog-admin.test.ts       # Test catalog và quyền admin
-│
-├── shared/
-│   ├── catalog.ts                 # Catalog và dữ liệu demo dùng chung
-│   ├── types.ts                   # Kiểu dữ liệu dùng chung
-│   └── const.ts                   # Hằng số dùng chung
-│
-├── drizzle/
-│   ├── schema.ts                  # Schema ORM
-│   ├── relations.ts               # Quan hệ giữa các bảng
-│   ├── migrations/                # Migration database
-│   ├── 0001_even_pete_wisdom.sql  # Auth, logs và favorites schema
-│   ├── 0002_blue_kang.sql          # Commerce schema theo logic bán máy tính
-│
-├── .vscode/
-│   ├── extensions.json             # Extension khuyến nghị
-│   └── settings.json               # Cấu hình workspace
-├── package.json                   # Scripts và dependency
-├── pnpm-lock.yaml                 # Phiên bản dependency đã khóa
-├── vite.config.ts                 # Cấu hình Vite
-├── tsconfig.json                  # Cấu hình TypeScript
-├── vitest.config.ts               # Cấu hình Vitest
-├── drizzle.config.ts              # Cấu hình Drizzle
-├── RUN_IN_VSCODE.md               # Hướng dẫn mở và chạy bằng VS Code
-└── README.md                      # Tài liệu dự án
+  User->>UI: Chọn sản phẩm và mở checkout
+  UI->>API: orders.create
+  API->>API: Kiểm tra user ownership
+  API->>API: Kiểm tra item, variant, quantity và stock
+  API->>DB: Lưu order snapshot và order_items
+  API->>DB: Tạo invoice
+  API->>DB: Xóa cart items đã đặt
+  API-->>UI: order number, invoice và trạng thái
+  UI-->>User: Hiển thị hóa đơn và tracking
 ```
 
-> `node_modules`, `.git`, log runtime và thư mục build không nằm trong gói ZIP phát hành để giảm dung lượng. Chúng sẽ được tạo lại hoặc sinh ra trong quá trình cài đặt và chạy dự án.
+## 🧰 Tech stack
 
-## 6. Cài đặt và chạy trong Visual Studio Code
+| Nhóm           | Công nghệ                               | Vai trò thực tế                          |
+| -------------- | --------------------------------------- | ---------------------------------------- |
+| Frontend chính | Vue 3, Vite, TypeScript                 | Storefront và các màn hình tương tác     |
+| Styling        | CSS, Tailwind CSS, responsive layout    | Design tokens, layout và animation       |
+| Backend        | Node.js, Express                        | HTTP server và runtime                   |
+| API            | tRPC 11, Zod, SuperJSON                 | API type-safe và validation              |
+| ORM/database   | Drizzle ORM, MySQL, `mysql2`            | Schema, query helpers và migrations      |
+| Realtime       | Socket.io, Socket.io Client             | Event giữa User/Admin và server          |
+| Icons          | `lucide-vue-next`, `lucide-react`       | Icon giao diện                           |
+| UI scaffold    | Radix UI packages, React Query packages | Một phần scaffold/components có sẵn      |
+| Auth/runtime   | OAuth integration, cookies, `jose`      | Hạ tầng runtime; flow demo cần hardening |
+| Storage        | S3 SDK và storage proxy                 | Hạ tầng lưu trữ/runtime có sẵn           |
+| Testing        | Vitest, TypeScript compiler             | Unit test procedure và type check        |
+| Tooling        | pnpm 10.4.1, Prettier, esbuild, tsx     | Cài đặt, format, build và dev watch      |
+
+> `package.json` còn chứa một số dependency React/Radix từ scaffold tích hợp. Storefront hiện tại sử dụng Vue 3; không nên suy ra rằng toàn bộ các dependency scaffold đều là tính năng đang dùng trong sản phẩm.
+
+## ⚙️ Cài đặt và chạy
 
 ### Yêu cầu
 
-+ Node.js 20 trở lên.
-+ pnpm 10 trở lên.
-+ Visual Studio Code.
-+
-### Cài dependency
+| Thành phần         | Phiên bản                                                |
+| ------------------ | -------------------------------------------------------- |
+| Node.js            | 20 trở lên                                               |
+| pnpm               | 10 trở lên; package manager của project là `pnpm@10.4.1` |
+| Visual Studio Code | Khuyến nghị                                              |
+| MySQL              | Chỉ cần khi bật luồng database thật                      |
+| RAM                | Khuyến nghị từ 4 GB                                      |
+
+### macOS/Linux
 
 ```bash
+# 1. Giải nén và đi vào thư mục có package.json
+cd /path/to/nexa-laptop-store-vscode
+
+# 2. Cài dependency theo pnpm-lock.yaml
 pnpm install
-```
 
-### Chạy trên Windows trong thư mục hiện tại
-
-Nếu thư mục bạn mở trong Visual Studio Code có dạng dưới đây thì đó đã là thư mục gốc của dự án:
-
-```text
-do_an_523100048/
-├── client/
-├── drizzle/
-├── server/
-├── shared/
-├── package.json
-├── pnpm-lock.yaml
-└── README.md
-```
-
-Không chạy `cd nexa-laptop-store` trong trường hợp này. Mở Terminal tại thư mục đang chứa `package.json` rồi chạy trực tiếp:
-
-```powershell
-npx --yes pnpm@10.4.1 install
-npx --yes pnpm@10.4.1 dev
-```
-
-Không bắt buộc chạy `corepack enable`. Nếu Corepack báo lỗi `EPERM` khi mở file trong `C:\Program Files\nodejs\yarn`, hãy tiếp tục dùng lệnh `npx --yes pnpm@10.4.1` như trên. Cách này không yêu cầu ghi thêm file vào thư mục cài Node.js.
-
-Nếu Terminal chưa đứng ở đúng thư mục, dùng đường dẫn tương ứng trên máy của bạn:
-
-```powershell
-cd "C:\Users\Admin\Downloads\do_an_523100048"
-npx --yes pnpm@10.4.1 install
-npx --yes pnpm@10.4.1 dev
-```
-
-Có thể xác nhận đang ở đúng thư mục bằng lệnh:
-
-```powershell
-dir package.json
-```
-
-Nếu lệnh này hiển thị `package.json`, bạn có thể chạy dự án ngay.
-
-Nếu máy chưa có pnpm, có thể bật Corepack rồi cài phiên bản phù hợp:
-
-```bash
-corepack enable
-corepack prepare pnpm@10.4.1 --activate
-```
-
-### Chạy môi trường phát triển
-
-```bash
+# 3. Chạy môi trường development
 pnpm dev
 ```
 
-Mở địa chỉ được hiển thị trong terminal, thông thường là `http://localhost:3000`.
+### Windows PowerShell
 
-### Các lệnh thường dùng
+```
+# 1. Mở đúng thư mục gốc của dự án
+cd "C:\Users\Admin\Downloads\nexa-laptop-store-vscode"
 
-| Lệnh | Mục đích |
-| --- | --- |
-| `pnpm dev` | Chạy server phát triển và hot reload |
-| `pnpm run check` | Kiểm tra TypeScript |
-| `pnpm test -- --run` | Chạy toàn bộ test một lần |
-| `pnpm run build` | Build frontend và bundle backend |
-| `pnpm start` | Chạy bản production sau khi build |
-| `pnpm db:push` | Sinh và áp dụng migration Drizzle |
-| `pnpm format` | Format mã nguồn bằng Prettier |
+# 2. Xác nhận package.json tồn tại
+Get-ChildItem package.json
 
-## 7. Kiểm thử hiện tại
+# 3. Cài và chạy bằng pnpm.cmd nếu PowerShell chặn script .ps1
+pnpm.cmd install
+pnpm.cmd dev
+```
 
-Các kiểm tra gần nhất đã hoàn tất thành công:
+Nếu máy chưa có pnpm hoặc Corepack bị lỗi quyền:
 
-+ TypeScript compiler không phát hiện lỗi qua `pnpm run check`.
-+ Vitest đạt 4/4 test trong 2 test file.
-+ Quyền admin, procedure catalog và luồng đăng xuất đã có test backend.
-+ Schema TypeScript, migration MySQL và favorites procedures đã được kiểm tra qua TypeScript và build.
-+ Commerce migration, helper và procedure cho biến thể, giỏ hàng, checkout, review, contact đã được kiểm tra qua TypeScript, build và test hiện có.
-+ Giao diện đã được kiểm tra ở desktop và mobile theo các luồng storefront, danh mục, PC Builder, liên hệ, chi tiết sản phẩm và admin.
-+
-## 8. Biến môi trường và dữ liệu nhạy cảm
+```
+npx.cmd --yes pnpm@10.4.1 install
+npx.cmd --yes pnpm@10.4.1 dev
+```
 
-Môi trường WebDev cung cấp các biến hệ thống như `DATABASE_URL`, `JWT_SECRET`, thông tin OAuth và các biến runtime liên quan. Khi chạy độc lập trong Visual Studio Code, chỉ thêm các biến cần thiết vào môi trường local hoặc file `.env` riêng.
+Server thường chạy tại `http://localhost:3000/`. Nếu port 3000 đang bận, server sẽ tự chọn port trống tiếp theo và in URL trong terminal.
 
-Không commit các nội dung sau vào Git hoặc chia sẻ công khai:
+### Các script
 
-+ Chuỗi kết nối MySQL thật.
-+ JWT secret, OAuth secret hoặc API key.
-+ Thông tin tài khoản production.
-+ File `.env` chứa dữ liệu nhạy cảm.
+| Lệnh             | Mục đích                                               |
+| ---------------- | ------------------------------------------------------ |
+| `pnpm dev`       | Chạy `tsx watch server/_core/index.ts`                 |
+| `pnpm run check` | Chạy TypeScript compiler với `--noEmit`                |
+| `pnpm test`      | Chạy Vitest một lần                                    |
+| `pnpm run build` | Build frontend bằng Vite và bundle server bằng esbuild |
+| `pnpm start`     | Chạy `dist/index.js` ở production mode                 |
+| `pnpm db:push`   | Generate và migrate Drizzle schema                     |
+| `pnpm format`    | Format mã nguồn bằng Prettier                          |
 
-## 9. Hướng phát triển tiếp theo
+### Database
 
-+ Chuyển toàn bộ dữ liệu demo và localStorage sang MySQL thông qua Drizzle ORM; ưu tiên cart, orders và contact trước.
-+ Hoàn thiện AuthController/UserAuth/AdminAuth với session cookie, bcrypt hoặc argon2id, rate limit, CSRF, reset password và 2FA admin.
-+ Bổ sung test integration cho auth và favorites, sau đó nâng coverage tối thiểu lên 80% trước khi production.
-+ Mở rộng PC Builder với kiểm tra kích thước, cổng kết nối, nguồn và tản nhiệt.
-+ Bổ sung thanh toán, vận chuyển, mã giảm giá và email xác nhận đơn hàng.
-+ Tách storefront, admin và các feature lớn thành module riêng khi hệ thống phát triển thêm.
+Bản demo có thể chạy với dữ liệu catalog dùng chung và local state theo thiết kế hiện tại. Khi bật MySQL, đặt `DATABASE_URL` trong môi trường chạy rồi thực hiện:
 
----
+```bash
+# Sinh migration từ schema và migrate database
+pnpm db:push
+```
 
-**NEXA Laptop Store** — tài liệu kỹ thuật tạm thời cho quá trình phát triển và triển khai.
+Không commit connection string thật, secret hoặc `.env` vào Git.
+
+## 🔐 Tài khoản demo
+
+| Role  | Email              | Password    | Route          |
+| ----- | ------------------ | ----------- | -------------- |
+| User  | `user@demo.com`    | `123456`    | `/login`       |
+| Admin | `admin@nexa.store` | `admin123!` | `/admin/login` |
+
+> Đây là thông tin trình diễn local. Không sử dụng các credential này trên Internet hoặc trong môi trường production. Admin không có form đăng ký công khai; route `/admin/*` yêu cầu trạng thái Admin hợp lệ.
+
+## 🗺️ Routes chính
+
+| Route              | Khu vực    | Mô tả                                      |
+| ------------------ | ---------- | ------------------------------------------ |
+| `/`                | Storefront | Trang chủ, hero slider và sản phẩm nổi bật |
+| `/laptops`         | Storefront | Catalog, tìm kiếm, nhóm và sắp xếp         |
+| `/product/:id`     | Storefront | Chi tiết sản phẩm và thông số              |
+| `/builder`         | Storefront | PC Builder                                 |
+| `/orders`          | User       | Lịch sử và tracking đơn hàng               |
+| `/contact`         | User       | Form liên hệ và hội thoại hỗ trợ           |
+| `/login`           | User       | Đăng nhập demo                             |
+| `/register`        | User       | Đăng ký demo                               |
+| `/my-favorites`    | User       | Sản phẩm yêu thích                         |
+| `/admin/login`     | Admin      | Đăng nhập khu vực quản trị                 |
+| `/admin/dashboard` | Admin      | Dashboard và các module vận hành           |
+
+## 🔌 API tRPC
+
+HTTP endpoint của tRPC được mount tại:
+
+```
+/api/trpc
+```
+
+Các procedure chính:
+
+| Nhóm      | Procedure              | Quyền     | Mô tả                                                   |
+| --------- | ---------------------- | --------- | ------------------------------------------------------- |
+| Auth      | `auth.me`              | Public    | Lấy user hiện tại hoặc `undefined`                      |
+| Auth      | `auth.logout`          | Public    | Xóa session cookie                                      |
+| Catalog   | `catalog.list`         | Public    | Tìm kiếm theo `query`, `category`, `group`              |
+| Catalog   | `catalog.getById`      | Public    | Lấy một sản phẩm theo id                                |
+| Catalog   | `catalog.variants`     | Public    | Lấy variant; fallback về cấu hình demo nếu DB chưa seed |
+| Cart      | `cart.list`            | Protected | Lấy cart của user hiện tại                              |
+| Cart      | `cart.add`             | Protected | Thêm sản phẩm/variant và kiểm tra stock                 |
+| Cart      | `cart.update`          | Protected | Cập nhật quantity của item thuộc user                   |
+| Cart      | `cart.remove`          | Protected | Xóa item thuộc user                                     |
+| Orders    | `orders.mine`          | Protected | Lấy các đơn của user                                    |
+| Orders    | `orders.detail`        | Protected | Xem chi tiết đơn thuộc user                             |
+| Orders    | `orders.create`        | Protected | Tạo order và invoice từ cart items                      |
+| Orders    | `orders.updateStatus`  | Admin     | Đổi trạng thái giao hàng                                |
+| Orders    | `orders.updatePayment` | Admin     | Đổi trạng thái thanh toán                               |
+| Reviews   | `reviews.list`         | Public    | Lấy review đã publish                                   |
+| Reviews   | `reviews.submit`       | Protected | Gửi review với trạng thái `pending`                     |
+| Contact   | `contact.send`         | Public    | Gửi yêu cầu liên hệ                                     |
+| Contact   | `contact.mine`         | Protected | Lấy contact của user                                    |
+| Contact   | `contact.reply`        | Admin     | Admin trả lời contact                                   |
+| Messages  | `messages.mine`        | Protected | Lấy tin nhắn của user                                   |
+| Messages  | `messages.send`        | Protected | Gửi tin nhắn trong conversation                         |
+| Messages  | `messages.markRead`    | Protected | Đánh dấu hội thoại đã đọc                               |
+| Messages  | `messages.adminList`   | Admin     | Lấy danh sách tin nhắn cho Admin                        |
+| Favorites | `favorites.list`       | Protected | Lấy favorites của user                                  |
+| Favorites | `favorites.check`      | Protected | Kiểm tra trạng thái yêu thích                           |
+| Favorites | `favorites.toggle`     | Protected | Thêm/bỏ yêu thích                                       |
+| Favorites | `favorites.remove`     | Protected | Xóa yêu thích                                           |
+| Admin     | `admin.summary`        | Admin     | KPI dashboard demo                                      |
+| Admin     | `admin.products`       | Admin     | Danh sách sản phẩm quản trị                             |
+| Admin     | `admin.users`          | Admin     | Danh sách user demo                                     |
+| Admin     | `admin.orders`         | Admin     | Danh sách đơn hàng                                      |
+| Admin     | `admin.contacts`       | Admin     | Danh sách contact                                       |
+
+Ví dụ gọi catalog bằng tRPC client:
+
+```
+const products = await trpc.catalog.list.query({
+  query: "RTX 4060",
+  group: "Linh kiện",
+} );
+```
+
+## 🛠️ PC Builder
+
+### Workflow
+
+1. Chọn nhóm cấu hình và ngân sách.
+
+1. Chọn CPU, GPU, RAM và SSD.
+
+1. Hệ thống đọc thông số từ catalog/variant.
+
+1. Kiểm tra compatibility cơ bản và hiển thị cảnh báo.
+
+1. Thêm cấu hình vào cart hoặc gửi yêu cầu tư vấn.
+
+### Logic hiện tại
+
+| Quan hệ               | Kiểm tra                                       |
+| --------------------- | ---------------------------------------------- |
+| CPU ↔ mainboard      | Socket cơ bản                                  |
+| RAM ↔ mainboard      | Chuẩn RAM cơ bản                               |
+| GPU ↔ PSU            | Công suất nguồn ở mức cảnh báo                 |
+| Cấu hình ↔ ngân sách | Tổng tiền so với ngân sách                     |
+| Sản phẩm ↔ tồn kho   | Variant hoạt động và quantity không vượt stock |
+
+### Giới hạn
+
+PC Builder hiện là công cụ demo. Chưa nên xem các cảnh báo là kiểm tra phần cứng đầy đủ; các quy tắc về kích thước case, số khe/cổng, tản nhiệt, clearance GPU và công suất PSU chi tiết sẽ được bổ sung trong roadmap.
+
+## 🗃️ Mô hình dữ liệu
+
+Schema Drizzle hiện có các nhóm bảng sau:
+
+```mermaid
+erDiagram
+  USERS ||--o{ CARTS : owns
+  CARTS ||--o{ CART_ITEMS : contains
+  USERS ||--o{ ORDERS : places
+  ORDERS ||--o{ ORDER_ITEMS : contains
+  ORDERS ||--|| INVOICES : has
+  USERS ||--o{ PRODUCT_REVIEWS : writes
+  USERS ||--o{ CONTACT_MESSAGES : creates
+  USERS ||--o{ MESSAGES : sends
+  USERS ||--o{ FAVORITES : saves
+  PRODUCT_VARIANTS }o--|| PRODUCTS : configures
+
+  USERS {
+    int id PK
+    string openId
+    string email
+    string role
+    string status
+  }
+  PRODUCT_VARIANTS {
+    int id PK
+    int productId
+    string sku
+    string cpu
+    string gpu
+    string ram
+    string storage
+    int stock
+  }
+  CARTS {
+    int id PK
+    int userId
+    string status
+  }
+  ORDERS {
+    int id PK
+    string orderNumber
+    int userId
+    string status
+    decimal total
+  }
+  INVOICES {
+    int id PK
+    int orderId FK
+    string invoiceNumber
+    string paymentMethod
+    string paymentStatus
+  }
+```
+
+Các bảng liên quan đến auth và audit gồm `password_reset_tokens`, `login_logs`, `admin_audit_logs`, `favorite_collections` và `favorites`. Commerce schema gồm `product_variants`, `carts`, `cart_items`, `orders`, `order_items`, `invoices`, `product_reviews`, `contact_messages` và `messages`.
+
+## 📂 Cấu trúc dự án
+
+```
+📦 nexa-laptop-store-vscode
+├── 📂 client/
+│   ├── 📄 index.html
+│   ├── 📂 public/assets/
+│   │   └── 📂 images/
+│   │       ├── 📂 banners/             # 5 banner SVG
+│   │       └── 📂 products/            # 8 ảnh SVG dùng lại cho catalog
+│   └── 📂 src/
+│       ├── 📄 App.vue                  # Storefront và Admin UI chính
+│       ├── 📄 App.tsx                  # Scaffold/integration có sẵn
+│       ├── 📄 main.ts                  # Vue entry
+│       ├── 📄 main.tsx                 # Scaffold entry có sẵn
+│       ├── 📄 index.css                # Design tokens, responsive CSS, animation
+│       ├── 📂 components/              # UI components và Radix scaffold
+│       ├── 📂 contexts/                # Theme context
+│       ├── 📂 hooks/                   # Responsive/persistence utilities
+│       ├── 📂 lib/                     # tRPC client và helpers
+│       └── 📂 pages/                   # Một số page/scaffold components
+├── 📂 server/
+│   ├── 📂 _core/                       # Context, auth, Vite, OAuth, storage, runtime
+│   ├── 📄 db.ts                        # Database helpers
+│   ├── 📄 routers.ts                   # tRPC appRouter và adminProcedure
+│   ├── 📄 realtime.ts                  # Socket.io event bridge
+│   ├── 📄 storage.ts                   # Storage helpers
+│   ├── 📄 auth.logout.test.ts          # Test auth logout
+│   └── 📄 catalog-admin.test.ts        # Test catalog và quyền Admin
+├── 📂 shared/
+│   ├── 📄 catalog.ts                   # 53 sản phẩm và demo types
+│   ├── 📄 types.ts                     # Shared types
+│   ├── 📄 const.ts                     # Shared constants
+│   └── 📂 _core/                       # Shared error helpers
+├── 📂 drizzle/
+│   ├── 📄 schema.ts                    # MySQL schema
+│   ├── 📄 relations.ts                 # Relations
+│   ├── 📂 migrations/                  # Migration metadata/files
+│   └── 📄 000*.sql                     # Các migration đã sinh
+├── 📂 patches/                         # Package patches
+├── 📄 package.json                     # Scripts và dependency
+├── 📄 pnpm-lock.yaml                   # Dependency lockfile
+├── 📄 vite.config.ts
+├── 📄 tsconfig.json
+├── 📄 vitest.config.ts
+├── 📄 drizzle.config.ts
+├── 📄 RUN_IN_VSCODE.md                 # Hướng dẫn Windows/VS Code
+├── 📄 todo.md                          # Checklist phát triển
+└── 📄 README.md
+```
+
+## 🧪 Kiểm thử
+
+Chạy các lệnh sau từ thư mục có `package.json`:
+
+```bash
+# Kiểm tra TypeScript
+pnpm run check
+
+# Chạy Vitest một lần
+pnpm test
+
+# Build frontend và server bundle
+pnpm run build
+```
+
+Phạm vi test hiện có:
+
+- `catalog.list` lọc sản phẩm theo query và group.
+
+- User thường bị từ chối khi gọi procedure Admin.
+
+- Admin có thể đọc dữ liệu summary.
+
+- Auth logout có test riêng.
+
+Kết quả checkpoint được ghi nhận: TypeScript không lỗi và Vitest đạt **4/4 test trong 2 test file**. Khi mở rộng sang production, nên bổ sung integration test cho auth, cart, order ownership, payment update, contact và favorites; mục tiêu coverage tối thiểu là 80%.
+
+## 🔒 Bảo mật và giới hạn demo
+
+### Chưa production-ready
+
+- Form đăng nhập và tài khoản demo phục vụ trình diễn local; cần session/auth hoàn chỉnh.
+
+- Mật khẩu demo không được dùng khi triển khai công khai.
+
+- VietQR, MoMo và các luồng thanh toán hiện là mô phỏng UI; cần payment API có signature, webhook, idempotency và đối soát.
+
+- Socket.io hiện có các event relay từ client; trước khi public cần xác thực session và quyền Admin ở tầng socket.
+
+- Một số trạng thái cart, order và favorites trên storefront vẫn dùng `localStorage`.
+
+- KPI dashboard hiện có số liệu demo trong procedure `admin.summary`.
+
+### Không commit
+
+- `DATABASE_URL` thật.
+
+- `JWT_SECRET`, OAuth secret hoặc API key.
+
+- Cookie/session production.
+
+- File `.env` có thông tin nhạy cảm.
+
+- Credential của tài khoản production.
+
+## 🗺️ Roadmap
+
+### Đã hoàn thành trong demo
+
+- [x] Storefront responsive và Admin Space riêng.
+
+- [x] Catalog 53 sản phẩm, 5 nhóm sản phẩm và 5 banner.
+
+- [x] Tìm kiếm, nhóm, sắp xếp và phân trang catalog.
+
+- [x] Product detail với gallery và thông số.
+
+- [x] Product variants theo SKU, cấu hình và tồn kho.
+
+- [x] Cart, checkout, invoice và order tracking demo.
+
+- [x] PC Builder với compatibility check cơ bản.
+
+- [x] Admin product/category/brand/inventory/order/contact/user views.
+
+- [x] Review pending workflow và favorites procedures.
+
+- [x] Socket.io event bridge.
+
+- [x] Type checking và test backend cơ bản.
+
+### Ưu tiên tiếp theo
+
+- [ ] Chuyển toàn bộ cart, orders, contact và favorites UI sang database thật.
+
+- [ ] Hoàn thiện session cookie, password hashing và auth flow production.
+
+- [ ] Bổ sung rate limiting, CSRF, reset password và 2FA cho Admin.
+
+- [ ] Khóa các Socket.io event bằng session và role.
+
+- [ ] Tích hợp payment gateway thật với webhook/đối soát.
+
+- [ ] Bổ sung shipping provider, email xác nhận và voucher production.
+
+- [ ] Mở rộng PC Builder: socket chi tiết, kích thước case, clearance, PSU và tản nhiệt.
+
+- [ ] Bổ sung integration/e2e tests và coverage tối thiểu 80%.
+
+- [ ] Bổ sung screenshot/GIF thật cho README và deploy preview công khai.
+
+- [ ] Tách App Vue lớn thành các module/page/feature dễ bảo trì hơn.
+
+## 🤝 Đóng góp
+
+1. Fork repository.
+
+1. Tạo branch:
+
+   ```
+   feature/<ten-tinh-nang>
+   fix/<ten-loi>
+   docs/<ten-tai-lieu>
+   ```
+
+1. Viết commit theo Conventional Commits:
+
+   ```
+   feat(pc-builder): add PSU warning
+   fix(cart): validate stock before update
+   docs(readme): document Windows setup
+   ```
+
+1. Chạy `pnpm run check`, `pnpm test` và `pnpm run build`.
+
+1. Tạo Pull Request với mô tả thay đổi, ảnh giao diện và cách kiểm thử.
+
+Nếu đóng góp thay đổi giao diện, hãy kiểm tra tối thiểu ở desktop và mobile; nếu thêm procedure, hãy bổ sung test cho quyền truy cập và ownership.
+
+## 📄 License
+
+Dự án được khai báo **MIT License** trong `package.json`. Khi phát hành repository công khai, nên thêm file `LICENSE` chứa nội dung đầy đủ của MIT License.
+
+## 🙏 Acknowledgments
+
+- [Vue](https://vuejs.org/) và [Vite](https://vitejs.dev/) cho frontend.
+
+- [TypeScript](https://www.typescriptlang.org/) cho static typing.
+
+- [tRPC](https://trpc.io/) cho API type-safe.
+
+- [Drizzle ORM](https://orm.drizzle.team/) và [MySQL](https://www.mysql.com/) cho data layer.
+
+- [Socket.io](https://socket.io/) cho realtime communication.
+
+- [Lucide](https://lucide.dev/) cho icon system.
+
+- [Vitest](https://vitest.dev/) cho kiểm thử.
+
+- [Mermaid](https://mermaid.js.org/) và [Shields.io](https://shields.io/) cho tài liệu README.
+
+<div align="center">
+
+⭐ Nếu NEXA hữu ích, hãy để lại một star sau khi repository được publish.
+
+**NEXA Laptop Store — Công cụ mạnh. Ý tưởng rộng.**
+
+</div>
